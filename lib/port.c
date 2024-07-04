@@ -44,7 +44,7 @@ static int portcmp (const char *pattern, const char *port)
 		port++;
 	}
 
-	if (strcmp(pattern, "") == 0 && strcmp(port, "") == 0)
+	if (strcmp(pattern, "") == 0 && strcmp(port, "") == 0) {
 		return 0;
 	}
 	if (streq(orig, "SU"))
