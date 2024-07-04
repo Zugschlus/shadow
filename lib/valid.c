@@ -13,6 +13,7 @@
 
 #include <pwd.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
 
 #include "defines.h"
@@ -30,7 +31,8 @@
  *	is used to indicate that a dummy salt must be used to encrypt the
  *	password anyway.
  */
-bool valid (const char *password, const struct passwd *ent)
+bool
+valid(const char *password, const struct passwd *ent)
 {
 	const char *encrypted;
 	/*@observer@*/const char *salt;
@@ -41,24 +43,20 @@ bool valid (const char *password, const struct passwd *ent)
 	 * the password is really empty do you return quickly.  This
 	 * routine is meant to waste CPU time.
 	 */
-
-	if ((NULL != ent->pw_name) && ('\0' == ent->pw_passwd[0])) {
-		if ('\0' == password[0]) {
+	if (NULL != ent->pw_name && strcmp(ent->pw_passwd, "") == 0) {
+		if (strcmp(password, "") == 0)
 			return true;	/* user entered nothing */
-		} else {
+		else
 			return false;	/* user entered something! */
-		}
 	}
 
 	/*
 	 * If there is no entry then we need a salt to use.
 	 */
-
-	if ((NULL == ent->pw_name) || ('\0' == ent->pw_passwd[0])) {
+	if (NULL == ent->pw_name || strcmp(ent->pw_passwd, "") == 0)
 		salt = "xx";
-	} else {
+	else
 		salt = ent->pw_passwd;
-	}
 
 	/*
 	 * Now, perform the encryption using the salt from before on

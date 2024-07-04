@@ -16,6 +16,7 @@
 #include <grp.h>
 #include <pwd.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -949,7 +950,8 @@ static int remove_tcbdir (const char *user_name, uid_t user_id)
 /*
  * main - userdel command
  */
-int main (int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 	int errors = 0; /* Error in the removal of the home directory */
 
@@ -1131,8 +1133,8 @@ int main (int argc, char **argv)
 	 * Note: This is a best effort basis. The user may log in between,
 	 * a cron job may be started on her behalf, etc.
 	 */
-	if ((prefix[0] == '\0') && !Rflg && user_busy (user_name, user_id) != 0) {
-		if (!fflg) {
+	if (strcmp(prefix, "") == 0 && !Rflg) {
+		if (user_busy (user_name, user_id) != 0 && !fflg) {
 #ifdef WITH_AUDIT
 			audit_logger (AUDIT_DEL_USER, Prog,
 			              "deleting user logged in",
@@ -1264,7 +1266,7 @@ int main (int argc, char **argv)
 	 * Cancel any crontabs or at jobs. Have to do this before we remove
 	 * the entry from /etc/passwd.
 	 */
-	if (prefix[0] == '\0')
+	if (strcmp(prefix, "") == 0)
 		user_cancel (user_name);
 	close_files ();
 
